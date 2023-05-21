@@ -72,39 +72,58 @@
       <option value="hqdefault">High Quality</option>
       <option value="mqdefault">Medium Quality</option>
     </select>
-    <button id="downloadBtn">Download Thumbnail</button>
+    <button id="getThumbnailBtn">Get Thumbnail</button>
+    <button id="downloadBtn" disabled>Start Download</button>
     <div id="thumbnailContainer"></div>
   </div>
   
   <script>
-    document.getElementById("downloadBtn").addEventListener("click", function() {
-      var videoUrl = document.getElementById("videoUrl").value;
+    var videoUrlInput = document.getElementById("videoUrl");
+    var getThumbnailBtn = document.getElementById("getThumbnailBtn");
+    var downloadBtn = document.getElementById("downloadBtn");
+
+    getThumbnailBtn.addEventListener("click", function() {
+      var videoUrl = videoUrlInput.value;
       var resolution = document.getElementById("resolutionSelect").value;
-      
+
       // Remove whitespaces and check if the URL is valid
       videoUrl = videoUrl.trim();
       if (videoUrl === "") {
         alert("Please enter a valid YouTube video URL.");
         return;
       }
-      
+
       // Get video ID from URL
       var videoId = extractVideoId(videoUrl);
       if (videoId === null) {
         alert("Please enter a valid YouTube video URL.");
         return;
       }
-      
+
       // Construct thumbnail URL based on resolution
       var thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/" + resolution + ".jpg";
-      
+
       // Display thumbnail
       var thumbnailImg = document.createElement("img");
       thumbnailImg.src = thumbnailUrl;
-      
+
       var thumbnailContainer = document.getElementById("thumbnailContainer");
       thumbnailContainer.innerHTML = "";
       thumbnailContainer.appendChild(thumbnailImg);
+
+      // Enable download button
+      downloadBtn.disabled = false;
+    });
+
+    downloadBtn.addEventListener("click", function() {
+      var thumbnailImg = document.querySelector("#thumbnailContainer img");
+      if (!thumbnailImg) {
+        alert("Please get the thumbnail first.");
+        return;
+      }
+
+      var thumbnailUrl = thumbnailImg.src;
+      window.open(thumbnailUrl, "_blank");
     });
 
     function extractVideoId(url) {
