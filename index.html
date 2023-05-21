@@ -55,7 +55,7 @@
       var thumbnailUrl = 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
       
       var thumbnailContainer = document.getElementById('thumbnail-container');
-      thumbnailContainer.innerHTML = '<img src="' + thumbnailUrl + '">';
+      thumbnailContainer.innerHTML = '<a href="' + thumbnailUrl + '" download><img src="' + thumbnailUrl + '"></a>';
     }
     
     function extractVideoId(url) {
