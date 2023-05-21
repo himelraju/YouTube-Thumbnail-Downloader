@@ -5,76 +5,117 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
+      background-color: #f1f1f1;
+      margin: 0;
+      padding: 0;
     }
-    
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
     h1 {
-      margin-top: 50px;
+      color: #333;
+      margin-top: 0;
     }
-    
-    .form-container {
-      margin-top: 30px;
-    }
-    
-    .input-field {
-      width: 400px;
+
+    input[type="text"] {
       padding: 10px;
-      margin-bottom: 10px;
-      font-size: 16px;
+      width: 100%;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
     }
-    
-    .download-btn {
+
+    select {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+
+    button {
       padding: 10px 20px;
-      font-size: 16px;
       background-color: #4CAF50;
       color: white;
       border: none;
       cursor: pointer;
+      border-radius: 3px;
     }
-    
-    .thumbnail-img {
-      margin-top: 30px;
+
+    #thumbnailContainer {
+      margin-top: 20px;
+    }
+
+    #thumbnailContainer img {
+      max-width: 100%;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>YouTube Thumbnail Downloader</h1>
-  
-  <div class="form-container">
-    <input type="text" id="video-url" class="input-field" placeholder="Enter YouTube Video URL">
-    <button id="download-btn" class="download-btn">Download Thumbnail</button>
+  <div class="container">
+    <h1>YouTube Thumbnail Downloader</h1>
+    <input type="text" id="videoUrl" placeholder="Enter YouTube video URL">
+    <select id="resolutionSelect">
+      <option value="maxresdefault">Max Resolution</option>
+      <option value="sddefault">Standard Definition</option>
+      <option value="hqdefault">High Quality</option>
+      <option value="mqdefault">Medium Quality</option>
+    </select>
+    <button id="downloadBtn">Download Thumbnail</button>
+    <div id="thumbnailContainer"></div>
   </div>
   
-  <div id="thumbnail-container" class="thumbnail-img"></div>
-  
   <script>
-    function downloadThumbnail() {
-      var videoUrl = document.getElementById('video-url').value;
-      var videoId = extractVideoId(videoUrl);
+    document.getElementById("downloadBtn").addEventListener("click", function() {
+      var videoUrl = document.getElementById("videoUrl").value;
+      var resolution = document.getElementById("resolutionSelect").value;
       
-      var thumbnailUrl = 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
-      
-      var thumbnailContainer = document.getElementById('thumbnail-container');
-      thumbnailContainer.innerHTML = '<a href="' + thumbnailUrl + '" download><img src="' + thumbnailUrl + '"></a>';
-    }
-    
-    function extractVideoId(url) {
-      var videoId = '';
-      var regex = /[?&]([^=#]+)=([^&#]*)/g;
-      var match;
-      
-      while (match = regex.exec(url)) {
-        if (match[1] === 'v') {
-          videoId = match[2];
-          break;
-        }
+      // Remove whitespaces and check if the URL is valid
+      videoUrl = videoUrl.trim();
+      if (videoUrl === "") {
+        alert("Please enter a valid YouTube video URL.");
+        return;
       }
       
+      // Get video ID from URL
+      var videoId = extractVideoId(videoUrl);
+      if (videoId === null) {
+        alert("Please enter a valid YouTube video URL.");
+        return;
+      }
+      
+      // Construct thumbnail URL based on resolution
+      var thumbnailUrl = "https://img.youtube.com/vi/" + videoId + "/" + resolution + ".jpg";
+      
+      // Display thumbnail
+      var thumbnailImg = document.createElement("img");
+      thumbnailImg.src = thumbnailUrl;
+      
+      var thumbnailContainer = document.getElementById("thumbnailContainer");
+      thumbnailContainer.innerHTML = "";
+      thumbnailContainer.appendChild(thumbnailImg);
+    });
+
+    function extractVideoId(url) {
+      var videoId = null;
+      var pattern = /(?:https?:\/\/(?:www\.)?)?youtu(?:be\.com\/(?:watch\?v=|embed\/|v\/)|\.be\/)([\w‌​\-]+)(?:[\?&]t=([\dhm‌​s]+))?/i;
+      var match = url.match(pattern);
+      if (match && match[1].length === 11) {
+        videoId = match[1];
+      }
       return videoId;
     }
-    
-    var downloadBtn = document.getElementById('download-btn');
-    downloadBtn.addEventListener('click', downloadThumbnail);
   </script>
 </body>
 </html>
